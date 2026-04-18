@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulación Escolar</title>
+
+<style>
+body{
+    font-family: Arial;
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    color:white;
+    text-align:center;
+    margin:0;
+}
+.container{
+    max-width:750px;
+    margin:auto;
+    padding:20px;
+}
+button{
+    display:block;
+    width:100%;
+    margin:10px 0;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    cursor:pointer;
+}
+button:hover{background:#f1c40f;color:black;}
+.hidden{display:none;}
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+}
+.case{
+    text-align:left;
+    background:rgba(255,255,255,0.1);
+    padding:15px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="topbar">
+<span id="progress">Nivel 1/4</span>
+</div>
+
+<!-- INTRO -->
+<div id="screen1">
+<h1>🏫 Simulación: Dirección Escolar</h1>
+<p>Asumes la dirección de una escuela con diversos problemas.  
+Debes tomar decisiones estratégicas.</p>
+<button onclick="next('screen2',2)">Iniciar</button>
+</div>
+
+<!-- CASO MÁS DESARROLLADO -->
+<div id="screen2" class="hidden">
+<h2>📊 Situación inicial</h2>
+
+<div class="case">
+<p>En la institución se observa:</p>
+<ul>
+<li>Resultados académicos por debajo del promedio</li>
+<li>Docentes trabajan de forma aislada</li>
+<li>Los alumnos muestran desinterés</li>
+<li>No existe una planificación clara del uso del tiempo</li>
+</ul>
+</div>
+
+<p><strong>Como director, ¿qué acción priorizarías?</strong></p>
+
+<button onclick="justify(true)">
+Levantar un diagnóstico institucional para comprender causas reales
+</button>
+
+<button onclick="justify(false)">
+Implementar estrategias inmediatas para mejorar resultados
+</button>
+
+<button onclick="justify(false)">
+Reestructurar horarios y actividades escolares
+</button>
+
+</div>
+
+<!-- JUSTIFICACIÓN -->
+<div id="justify" class="hidden">
+<h3>¿Por qué consideras que esa es la mejor decisión?</h3>
+
+<button onclick="afterJustify(true)">
+Permite intervenir con base en información real y no supuestos
+</button>
+
+<button onclick="afterJustify(false)">
+Es la forma más rápida de ver cambios
+</button>
+
+<button onclick="afterJustify(false)">
+Organiza mejor el trabajo sin necesidad de análisis previo
+</button>
+
+</div>
+
+<!-- SEGUNDA DECISIÓN MÁS COMPLEJA -->
+<div id="screen3" class="hidden">
+<h2>👩‍🏫 Nueva situación</h2>
+
+<div class="case">
+<p>El diagnóstico revela que:</p>
+<ul>
+<li>No hay coordinación entre docentes</li>
+<li>Cada grupo trabaja con enfoques distintos</li>
+</ul>
+</div>
+
+<p><strong>¿Qué estrategia tendría mayor impacto?</strong></p>
+
+<button onclick="nextDecision(true,'screen4',3)">
+Generar espacios de trabajo colaborativo y acuerdos pedagógicos
+</button>
+
+<button onclick="nextDecision(false,'retry',3)">
+Supervisar constantemente el trabajo individual docente
+</button>
+
+<button onclick="nextDecision(false,'retry',3)">
+Establecer lineamientos estrictos desde dirección
+</button>
+
+</div>
+
+<!-- RETRY -->
+<div id="retry" class="hidden">
+<h2>⚠️ Resultado parcial</h2>
+<p>La medida no resolvió el problema de fondo.</p>
+
+<button onclick="next('screen3',3)">Replantear decisión</button>
+<button onclick="next('final_bad',4)">Continuar así</button>
+</div>
+
+<!-- TERCERA DECISIÓN -->
+<div id="screen4" class="hidden">
+<h2>⏰ Nueva situación</h2>
+
+<div class="case">
+<p>Se detecta que:</p>
+<ul>
+<li>El tiempo en clase no se aprovecha adecuadamente</li>
+<li>Las actividades no están bien organizadas</li>
+</ul>
+</div>
+
+<p><strong>¿Qué harías?</strong></p>
+
+<button onclick="nextDecision(true,'screen5',4)">
+Reorganizar tiempos, espacios y uso de recursos didácticos
+</button>
+
+<button onclick="nextDecision(false,'final_bad',4)">
+Reducir contenidos para avanzar más rápido
+</button>
+
+<button onclick="nextDecision(false,'final_bad',4)">
+Aplicar medidas disciplinarias para controlar al grupo
+</button>
+
+</div>
+
+<!-- DECISIÓN FINAL -->
+<div id="screen5" class="hidden">
+<h2>📌 Decisión final</h2>
+
+<p><strong>¿Qué elemento fue clave en todo el proceso?</strong></p>
+
+<button onclick="finalGood()">El análisis integral de la organización escolar</button>
+<button onclick="finalBad()">La aplicación de soluciones inmediatas</button>
+<button onclick="finalBad()">La autoridad directiva</button>
+
+</div>
+
+<!-- FINAL BUENO -->
+<div id="final_good" class="hidden">
+<h1>🟢 Dirección efectiva</h1>
+<p>Lograste mejorar la escuela mediante análisis, organización y toma de decisiones estratégicas.</p>
+
+<p><strong>Esto es lo que se desarrolla en la maestría.</strong></p>
+</div>
+
+<!-- FINAL MALO -->
+<div id="final_bad" class="hidden">
+<h1>🔴 Resultado limitado</h1>
+<p>Las decisiones no lograron transformar la situación escolar.</p>
+<p>Sin análisis integral, las acciones pierden impacto.</p>
+</div>
+
+</div>
+
+<script>
+function next(id, level){
+    hideAll();
+    document.getElementById(id).classList.remove("hidden");
+    document.getElementById("progress").innerText = "Nivel " + level + "/4";
+}
+
+function justify(correct){
+    window.answerCorrect = correct;
+    next("justify",2);
+}
+
+function afterJustify(choice){
+    if(window.answerCorrect && choice){
+        next("screen3",3);
+    }else{
+        next("retry",2);
+    }
+}
+
+function nextDecision(correct, nextScreen, level){
+    next(nextScreen, level);
+}
+
+function finalGood(){
+    next("final_good",4);
+}
+
+function finalBad(){
+    next("final_bad",4);
+}
+
+function hideAll(){
+    document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
+}
+</script>
+
+</body>
+</html>
