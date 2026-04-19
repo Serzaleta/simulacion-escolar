@@ -20,6 +20,8 @@ body{
     padding:20px;
 }
 
+h1{margin-bottom:10px;}
+
 button{
     width:100%;
     padding:15px;
@@ -72,6 +74,7 @@ input{
 <h1>🎮 Simulación Educativa</h1>
 
 <div id="intro">
+<p>Responde correctamente y demuestra tu conocimiento</p>
 <input id="nameInput" placeholder="Escribe tu nombre">
 <button onclick="start()">🚀 Comenzar</button>
 </div>
@@ -92,13 +95,12 @@ input{
 
 </div>
 
-<!-- ✅ Firebase SIN import (correcto para GitHub) -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
 
-// 🔥 TU CONFIG (YA CORRECTA)
 const firebaseConfig = {
   apiKey: "AIzaSyBlgHkKd24UfefaOyH-2f0KhGs4N--u7QU",
   authDomain: "reto-academico-31e18.firebaseapp.com",
@@ -109,22 +111,29 @@ const firebaseConfig = {
   appId: "1:354546453022:web:a265a7e9cf3a8eb4a27c0f"
 };
 
-// 🔥 INICIALIZAR
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 🎮 PREGUNTAS
+// ✅ PREGUNTAS EXACTAS
 const quiz = [
-["🏫 ¿Qué permite que una escuela funcione como comunidad?",["Infraestructura","Plan de estudios","Gestión y liderazgo"],2],
-["👤 Habilidad clave del líder moderno",["Autoridad","Conocimiento","Inteligencia emocional"],2],
-["📋 Qué orienta decisiones escolares",["Normas","Actividades","Instrumentos de gestión"],2],
-["📘 Documento que guía la escuela",["Programa","Plan","PEI"],2],
-["⚖️ Documento de normas",["Proyecto","Manual","Reglamento Interno"],2]
+["🏫 ¿Qué permite que una escuela funcione como una comunidad activa y organizada?",
+["Infraestructura escolar","Plan de estudios","Gestión y liderazgo institucional"],2],
+
+["👤 ¿Qué habilidad es clave en un líder educativo actual?",
+["Autoridad estricta","Conocimiento técnico","Inteligencia emocional"],2],
+
+["📋 ¿Qué herramientas orientan las decisiones y acciones dentro de una escuela?",
+["Normas disciplinarias","Actividades recreativas","Instrumentos de gestión"],2],
+
+["📘 ¿Qué documento define la identidad de la escuela y guía su rumbo?",
+["Programa de estudios","Plan de clases","Proyecto Educativo Institucional (PEI)"],2],
+
+["⚖️ ¿Qué documento establece derechos, deberes y normas dentro de la escuela?",
+["Proyecto educativo","Manual de evaluación","Reglamento Interno"],2]
 ];
 
 let i=0, score=0, startTime, name="";
 
-// 🚀 INICIAR
 function start(){
     name=document.getElementById("nameInput").value.trim();
     if(!name){
@@ -140,7 +149,6 @@ function start(){
     load();
 }
 
-// 📌 CARGAR PREGUNTA
 function load(){
     let q=quiz[i];
     document.getElementById("question").innerText=q[0];
@@ -154,7 +162,6 @@ function load(){
     document.getElementById("feedback").innerText="";
 }
 
-// ✅ RESPUESTA
 function answer(idx){
     if(idx===quiz[i][2]){
         score++;
@@ -167,7 +174,6 @@ function answer(idx){
     document.getElementById("nextBtn").classList.remove("hidden");
 }
 
-// ➡️ SIGUIENTE
 function nextQ(){
     i++;
     document.getElementById("nextBtn").classList.add("hidden");
@@ -179,7 +185,6 @@ function nextQ(){
     }
 }
 
-// 🏁 FINAL
 function finish(){
     let time=Math.floor((new Date()-startTime)/1000);
 
@@ -189,7 +194,6 @@ function finish(){
     document.getElementById("scoreText").innerHTML=
     `👤 ${name}<br>🎯 ${score}/5<br>⏱️ ${time}s`;
 
-    // 🔥 GUARDAR
     db.ref("ranking").push({
         nombre:name,
         puntaje:score,
@@ -197,7 +201,7 @@ function finish(){
     });
 }
 
-// 🏆 RANKING EN VIVO
+// 🔥 PODIUM EN VIVO
 db.ref("ranking").on("value",snap=>{
     let data=snap.val();
     if(!data) return;
