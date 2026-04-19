@@ -14,13 +14,7 @@ body{
     margin:0;
 }
 
-.container{
-    max-width:800px;
-    margin:auto;
-    padding:20px;
-}
-
-h1{margin-bottom:10px;}
+.container{max-width:800px;margin:auto;padding:20px;}
 
 button{
     width:100%;
@@ -34,9 +28,7 @@ button{
     color:white;
 }
 
-button:hover{
-    transform:scale(1.05);
-}
+button:hover{transform:scale(1.05);}
 
 input{
     padding:12px;
@@ -64,6 +56,14 @@ input{
 .first{height:120px; background:gold; color:black;}
 .second{height:90px; background:silver; color:black;}
 .third{height:70px; background:#cd7f32; color:white;}
+
+.flash{
+    animation:flashAnim 1s;
+}
+@keyframes flashAnim{
+    0%{transform:scale(1.2); background:#00ffcc;}
+    100%{transform:scale(1);}
+}
 </style>
 </head>
 
@@ -74,9 +74,9 @@ input{
 <h1>🎮 Simulación Educativa</h1>
 
 <div id="intro">
-<p>Responde correctamente y demuestra tu conocimiento</p>
 <input id="nameInput" placeholder="Escribe tu nombre">
 <button onclick="start()">🚀 Comenzar</button>
+<button onclick="resetRanking()">🔄 Reiniciar ranking</button>
 </div>
 
 <div id="quiz" class="hidden">
@@ -114,7 +114,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ✅ PREGUNTAS EXACTAS
+// 🔥 IDENTIFICADOR DE RONDA
+const gameId = "actividad_maestria_2026";
+
+// 🧠 PREGUNTAS
 const quiz = [
 ["🏫 ¿Qué permite que una escuela funcione como una comunidad activa y organizada?",
 ["Infraestructura escolar","Plan de estudios","Gestión y liderazgo institucional"],2],
@@ -133,13 +136,12 @@ const quiz = [
 ];
 
 let i=0, score=0, startTime, name="";
+let lastTop = [];
 
+// 🚀 INICIAR
 function start(){
     name=document.getElementById("nameInput").value.trim();
-    if(!name){
-        alert("Escribe tu nombre");
-        return;
-    }
+    if(!name){ alert("Escribe tu nombre"); return; }
 
     startTime=new Date();
 
@@ -149,6 +151,7 @@ function start(){
     load();
 }
 
+// 📌 CARGAR
 function load(){
     let q=quiz[i];
     document.getElementById("question").innerText=q[0];
@@ -162,6 +165,7 @@ function load(){
     document.getElementById("feedback").innerText="";
 }
 
+// ✅ RESPUESTA
 function answer(idx){
     if(idx===quiz[i][2]){
         score++;
@@ -174,17 +178,16 @@ function answer(idx){
     document.getElementById("nextBtn").classList.remove("hidden");
 }
 
+// ➡️ SIGUIENTE
 function nextQ(){
     i++;
     document.getElementById("nextBtn").classList.add("hidden");
 
-    if(i<quiz.length){
-        load();
-    }else{
-        finish();
-    }
+    if(i<quiz.length) load();
+    else finish();
 }
 
+// 🏁 FINAL
 function finish(){
     let time=Math.floor((new Date()-startTime)/1000);
 
@@ -194,15 +197,22 @@ function finish(){
     document.getElementById("scoreText").innerHTML=
     `👤 ${name}<br>🎯 ${score}/5<br>⏱️ ${time}s`;
 
-    db.ref("ranking").push({
+    db.ref("ranking/"+gameId).push({
         nombre:name,
         puntaje:score,
         tiempo:time
     });
 }
 
-// 🔥 PODIUM EN VIVO
-db.ref("ranking").on("value",snap=>{
+// 🔄 RESET
+function resetRanking(){
+    if(confirm("¿Seguro que deseas reiniciar el ranking?")){
+        db.ref("ranking/"+gameId).remove();
+    }
+}
+
+// 🏆 RANKING EN VIVO + ANIMACIÓN
+db.ref("ranking/"+gameId).on("value",snap=>{
     let data=snap.val();
     if(!data) return;
 
@@ -221,6 +231,16 @@ db.ref("ranking").on("value",snap=>{
     html+="</div>";
 
     document.getElementById("ranking").innerHTML=html;
+
+    // 🎉 ANIMACIÓN SI CAMBIA EL TOP
+    if(JSON.stringify(top) !== JSON.stringify(lastTop)){
+        document.querySelectorAll(".podium div").forEach(el=>{
+            el.classList.add("flash");
+            setTimeout(()=>el.classList.remove("flash"),1000);
+        });
+    }
+
+    lastTop = top;
 });
 
 </script>
